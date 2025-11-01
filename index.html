@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crop Prediction System</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background: url("https://i.pinimg.com/1200x/40/73/d4/4073d4378fad895860ee2285fedf3a74.jpg") no-repeat center center/cover;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #2e7d32;
+    }
+
+    .overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(6px);
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 20px;
+      padding: 40px 50px;
+      width: 400px;
+      box-shadow: 0 0 30px rgba(46, 125, 50, 0.3);
+      text-align: center;
+      animation: fadeIn 0.8s ease;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      color: #1b5e20;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: 600;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      border: 2px solid #c8e6c9;
+      border-radius: 10px;
+      outline: none;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      background: #f9fff9;
+    }
+
+    input:focus {
+      border-color: #fdd835;
+      box-shadow: 0 0 10px rgba(253, 216, 53, 0.5);
+      transform: scale(1.02);
+    }
+
+    button {
+      margin-top: 20px;
+      background: linear-gradient(135deg, #2e7d32, #fdd835);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(253, 216, 53, 0.6);
+    }
+
+    .result-card {
+      margin-top: 30px;
+      background: linear-gradient(135deg, #fdd83533, #2e7d3233);
+      border: 1px solid #d4af37;
+      border-radius: 15px;
+      padding: 15px;
+      font-size: 1.2rem;
+      color: #1b5e20;
+      animation: fadeIn 0.8s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay"></div>
+
+  <div class="container">
+    <h1>🌾 Crop Prediction</h1>
+    <form id="cropForm">
+      <label for="N">Nitrogen (N)</label>
+      <input type="number" id="N" placeholder="e.g. 90" required>
+
+      <label for="P">Phosphorus (P)</label>
+      <input type="number" id="P" placeholder="e.g. 42" required>
+
+      <label for="K">Potassium (K)</label>
+      <input type="number" id="K" placeholder="e.g. 43" required>
+
+      <label for="temperature">Temperature (°C)</label>
+      <input type="number" step="0.01" id="temperature" placeholder="e.g. 20.87" required>
+
+      <label for="humidity">Humidity (%)</label>
+      <input type="number" step="0.01" id="humidity" placeholder="e.g. 82.00" required>
+
+      <label for="ph">pH Value</label>
+      <input type="number" step="0.01" id="ph" placeholder="e.g. 6.50" required>
+
+      <label for="rainfall">Rainfall (mm)</label>
+      <input type="number" step="0.01" id="rainfall" placeholder="e.g. 202.93" required>
+
+      <button type="submit">Predict Crop</button>
+    </form>
+
+    <div id="result"></div>
+  </div>
+
+  <script>
+    document.getElementById("cropForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      const data = {
+        N: parseFloat(document.getElementById("N").value),
+        P: parseFloat(document.getElementById("P").value),
+        K: parseFloat(document.getElementById("K").value),
+        temperature: parseFloat(document.getElementById("temperature").value),
+        humidity: parseFloat(document.getElementById("humidity").value),
+        ph: parseFloat(document.getElementById("ph").value),
+        rainfall: parseFloat(document.getElementById("rainfall").value)
+      };
+
+      const res = await fetch("/predict", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(data)
+      });
+
+      const result = await res.json();
+      const resultDiv = document.getElementById("result");
+
+      resultDiv.innerHTML = `
+        <div class="result-card">
+          <h3>Recommended Crop:</h3>
+          <p>${result.prediction}</p>
+        </div>
+      `;
+    });
+  </script>
+</body>
+</html>
