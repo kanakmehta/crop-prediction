@@ -1,0 +1,10 @@
+Crop Prediction
+│
+├── app.py
+├── crop_model.pkl           ← your trained model file (rename 'crop app' to this)
+│
+├── templates/
+│   └── index.html           ← frontend form
+│
+└── static/
+    └── style.css            ← optional, for styling (you can inline it in HTML too)
